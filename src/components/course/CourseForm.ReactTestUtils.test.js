@@ -12,7 +12,7 @@ function setup(saving) {
 		errors: {},
 		onSave: () => {},
 		onChange: () => {}
-	}
+	};
 	let renderer = TestUtils.createRenderer(); // Instance of the renderer
 	renderer.render(<CourseForm {...props} />); // Render the CourseForm component
 	let output = renderer.getRenderOutput(); // Get output of rendered component

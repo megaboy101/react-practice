@@ -3,9 +3,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import * as courseActions from '../../actions/courseActions';
 import CourseForm from './CourseForm';
+import { authorsFormattedForDropdown } from '../../selectors/selectors';
 import toastr from 'toastr'; // Notification library
 
-class ManageCoursePage extends React.Component {
+export class ManageCoursePage extends React.Component { // Export keyword used for testing, exports raw component, not finalized component with redux
 	constructor(props, context) {
 		super(props, context);
 
@@ -33,8 +34,26 @@ class ManageCoursePage extends React.Component {
 		return this.setState({course: course});
 	}
 
+	courseFormIsValid() {
+		let formIsValid = true; // Boolean whether form is valid
+		let errors = {}; // Object to hold errors
+
+		if (this.state.course.title.length < 5) { // if title in thing posted is less than 5 characters
+			errors.title = 'Title must be at least 5 characters.'; // Set error message
+			formIsValid = false; // Mark form as invalid
+		}
+
+		this.setState({errors: errors}); // Update state with errors
+		return formIsValid; // Return boolean determining if form is valid
+	}
+
 	saveCourse(event) {
 		event.preventDefault();
+
+		if (!this.courseFormIsValid()) {
+			return;
+		}
+
 		this.setState({saving: true});
 
 		this.props.actions.saveCourse(this.state.course)
@@ -93,16 +112,9 @@ function mapStateToProps(state, ownProps) {
 		course = getCourseById(state.courses, courseId);
 	}
 
-	const authorsFormattedForDropdown = state.authors.map(author => {
-		return {
-			value: author.id,
-			text: author.firstName + ' ' + author.lastName
-		};
-	});
-
 	return {
 		course: course,
-		authors: authorsFormattedForDropdown
+		authors: authorsFormattedForDropdown(state.authors)
 	};
 }
 

@@ -3,7 +3,7 @@
 // * = everyting, aliased as types, this is importing all the action names
 import * as types from './actionTypes';
 import courseApi from '../api/mockCourseApi'; // Mock api
-import { beginAjaxCall } from './ajaxStatusActions';
+import { beginAjaxCall, ajaxCallError } from './ajaxStatusActions';
 
 /* Actions must return objects specifying the type action to
 complete, along with any necessary data to carry out the action */
