@@ -1,3 +1,4 @@
+/*eslint-disable import/default*/ // <-- Disable default imports since redux store uses require()
 // Import a file without 'from' for passive effects like pollyfilling or importing other file-types
 
 import 'babel-polyfill'; // For things that arent transpilable by babel

@@ -1,4 +1,4 @@
-// Root reducer, typically called index.js
+// Root reducer, called index.js since the store will look for it
 // Remember to add all new reducers created to this root reducer list
 import { combineReducers } from 'redux';
 import courses from './courseReducer'; // Notice courseReducer has the alias courses,
@@ -7,6 +7,7 @@ import courses from './courseReducer'; // Notice courseReducer has the alias cou
 import authors from './authorReducer';
 import ajaxCallsInProgress from './ajaxStatusReducer';
 
+// Putting together pieces of the pie
 const rootReducer = combineReducers({
 	// Connects list all the reducers to combine for the whole application
 	courses, // courses: courses

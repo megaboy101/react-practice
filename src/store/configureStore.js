@@ -1,14 +1,9 @@
-// Redux Store
-import { createStore, applyMiddleware } from 'redux'; // applyMiddleware creates usable middleware before the store is created
-import rootReducer from '../reducers';
-import reduxImmutableStateInvariant from 'redux-immutable-state-invariant';
-import thunk from 'redux-thunk'; // Used for async redux with AJAX and api calls
+// File to discern which store to use, development or production
+// Uses require instead of ES6 imports since ES6 doesnt have dynamic imports
 
-// Function to configure store, designed to be called at apps entry point, thus the store is configued on startup
-export default function configureStore(initialState) { // Initialize store with initial states
-	return createStore(
-		rootReducer,
-		initialState,
-		applyMiddleware(thunk, reduxImmutableStateInvariant()) // Infinite parameters for every middleware to add
-	);
+if (process.env.NODE_ENV === 'production') {
+	module.exports = require('./configureStore.prod');
+}
+else {
+	module.exports = require('./configureStore.dev');
 }

@@ -1,7 +1,123 @@
+/*
+STARTUP FLOW:
+
+
+DEV MODE:
+1. Reads package.json, loads in necessary dependencies
+	- Runs npm start command
+		> Runs prestart message (babel-transpiled)
+		> Initaites execution of server code srcServer.js
+		> Runs linting and initiates watch mode for live changes
+		> Runs mocha tests and initiates watch mode for live changes
+
+2. Runs server code in tools/srcServer.js
+	- Import necessary files
+		> express
+		> webpack
+		> path
+		> config (webpack file)
+		> open
+	- Initialize server configuration variables
+		> port
+		> express()
+		> compiler (webpack)
+	- Setup webpack middlewares
+	- Setup hot reloading middleware for webpack
+	- Setup express routing (routing handled front-end, so just serve index.html for all urls)
+	- Initiate server on port
+		> Use open to open new webpage
+
+3. Webpack compiles and runs synchronously
+	- Import necessary files
+		> webpack
+		> path
+	- Configure webpack object literal
+		> Set 'debug' mode (true | false) (display bebug info to console, false by default)
+		> set 'devtool' (cheap-module-eval-source-map)
+		> set 'noInfo' (true | false) (show files being bundled in console)
+		> Define 'entry' points as array
+		 	* eventsource-polyfill for hot reloading
+			* webpack-hot-middleware/client?reload=true in case hot reloading bugs
+			* src/index.js (must be last)
+		> set 'target' (web)
+		> Define 'output' as object literal
+			* Set 'path' to place output (usually a /dist folder)
+			* define 'publicPath' as entry/base path (usually "/")
+			* define 'filename' for name of bundled file (usually bundle.js)
+		> Define 'devServer' as object literal for location of source files to bundled
+			* set 'contentBase' to /src file
+		> Define 'plugins' as array of new objects for webpack addons
+			* webpack.HotModuleReplacementPlugin() to reload modules without refreshing the whole page
+			* webpack.NoErrorsPlugin() to keep errors from breaking hot reloading
+		> Define 'module' as object literal for module loading
+			* Define 'loaders' as array of object literalls for types of files webpack handles
+				- 'test' prop as a RegEx test for the extension name (.js, .css)
+				- 'include' prop for specific files to include instead of all by default
+				- 'loader' prop for what things the file should load with
+
+4. Webpack bundled front-end code is runs index.js in /src
+	- Import necessary files
+		> 'babel-polyfill' for things babel cant transpile
+		> React from 'react'
+		> { render } from 'react-dom' for DOM connection
+		> configureStore from './store/configureStore' for redux store config
+		> { Provider } from 'react-redux' to connect redux store to react components
+		> { Router, browserHistory } from 'react-router' for routing and clean url's
+		> routes from './routes' for React front-end component routing
+		> { loadCourses } from './actions/courseActions' for courses given by api on startup
+		> { loadAuthors } from './ations/authorActions' for authors given by api on startup
+		> './styles/styles.css' for css files
+		> './node_modules/...' for other library related things (ex. bootstrap/toastr css)
+	- Create instance of redux store and dispatch functions to run immediately
+	- Render top level component
+		> Provider component with store prop equaling store instance for redux top-level state store
+		> Router component inside with browserHistory and routes props for url page routing
+
+6. Interpret and route url through router component in routes.js
+	- import necessay files
+		> React from 'react'
+		> { route, IndexRoute } from 'react-router' for base routes and extensions
+		> App from './components/App' for root view component all components fit inside of
+		> HomePage from './components/home/HomePage' for homepage component
+		> AboutPage from './components/about/AboutPage' for aboutpage component
+		> CoursesPage from './components/course/CoursesPage' for coursespage component
+		> ManageCoursePage from './components/course/ManageCoursePage' for ManageCoursePage component
+	- Export default route system
+		> Base 'Route' '/' with 'component' 'App', all extensions of that url are nested inside
+		> 'IndexRoute' with component prop to 'HomePage' for basic route given only '/'
+		> 'Route' with 'path' to 'courses' and 'component' 'CoursesPage'
+		> 'Route' with 'path' to 'course' and 'component' 'ManageCoursePage'
+		> 'Route' with 'path' to 'course:id' and 'component' 'ManageCoursePage'
+		> 'Route' with 'path' to 'about' and 'component' 'AboutPage'
+
+7. Load routed component as child within App shell component
+	- You have website :)
+
+
+
+PROD MODE:
+
+
+
+STATE FLOW:
+
+DEV MODE:
+1. On startup, the store is configured, mixing in the root reducer (a mass of all the other reducers), any initial state passed in, and any middlewares
+
+2. The root reducer combines all the other reducers to be used
+
+PROD MODE:
+
+*/
+
+
+
+
+
 // .babelrc
 // Configuration settings for babel, must be in root
 {
-  "presets": ["react", "es2015"], // Preset to react and es6
+	"presets": ["react", "es2015"], // Preset to react and es6
   "env": { // Environment settings
     "development": { // Development env only
       "presets": ["react-hmre"] // run hmre preset, bundle of hot reloading features for babel
@@ -115,6 +231,12 @@
 	  "lint:watch": "npm run lint -- --watch" // Run the lint script, but with the watch flag (to enable watching)
 	  "test": "mocha --reporter spec tools/testSetup.js \"src/**/*.test.js\"" // Run mocha testing with the progress reporter using the setup from testSetup to test all src files ending in test.js, switch to spec when actually testing
 	  "test:watch": "npm run test -- --watch" // Run test watching to run on file save
+	  "clean-dist": "npm run remove-dist && mkdir dist", // Removes then recreates dist folder, to ensure folder is empty and clean to write on
+	  "remove-dist": "node_modules/.bin/rimraf ./dist", // Remove dist folder
+	  "build:html": "babel-node tools/buildHtml.js", // Create production html base
+	  "prebuild": "npm-run-all clean-dist test lint build:html", // No --parallel flag, so arguments run in order, clean, then test, then lint, then build html base
+	  "build": "babel-node tools/build.js", // Run webpack production build
+	  "postbuild": "babel-node tools/distServer.js" // Spin up the production server
   },
   "author": "Cory House",
   "license": "MIT",
