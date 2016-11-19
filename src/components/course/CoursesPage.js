@@ -65,5 +65,5 @@ function mapDispatchToProps(dispatch) { // Determines what actions are available
 }
 
 // No mapDispatchToProps, therefore there is a usable dispatch prop
-// mapStateToProps/mapDispatchToProps arent required names, can also be created inine
+// mapStateToProps/mapDispatchToProps arent required names, can also be created inline
 export default connect(mapStateToProps, mapDispatchToProps)(CoursesPage); // Double paranthesis due to 2 function calls (the first returns a function to handle the second)

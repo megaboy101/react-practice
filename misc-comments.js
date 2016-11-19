@@ -100,14 +100,23 @@ PROD MODE:
 
 
 STATE FLOW:
-
-DEV MODE:
+TOP-DOWN:
 1. On startup, the store is configured, mixing in the root reducer (a mass of all the other reducers), any initial state passed in, and any middlewares
 
 2. The root reducer combines all the other reducers to be used
 
-PROD MODE:
+3. react-redux exposes the redux store at the projects root component (typically Router) by wrapping it in the Provider component
 
+4. react-redux connects each individual component to the store with the connect method. Use mapStateToProps and mapDispatchToProps to narrow what slice of state and actions each component can work with
+
+BOTTOM-UP:
+1. Action is triggered by some component method calling a props.actions action mapped to mapDispatchToProps
+
+2. Goes to action file that returns an action object, and then is sent to its corresponding reducer
+
+3. Reducer takes in state of specific thing (like an array of numbers), along with sent aciton and return the new state of the thing
+
+4. Store is updated and trickles down through the component tree
 */
 
 
